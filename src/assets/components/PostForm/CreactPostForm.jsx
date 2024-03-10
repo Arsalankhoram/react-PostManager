@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import PostFormTextInput from "./PostFormTextInput"
 import PostFormSelect from "./PostFormSelect"
 import PostFormTextarea from "./PostFormTextarea"
@@ -8,7 +8,7 @@ export default function CreactPostFrom() {
     let formValue = {
         title: "arsalan",
         categury: "NFC Card",
-        Content: "content"
+        content: "content"
     }
 
     let titleValue = useRef(null)
@@ -16,11 +16,30 @@ export default function CreactPostFrom() {
     let contentValue = useRef(null)
     let submitRef = useRef(null)
 
+    const [seccessMessage, setseccessMessage] = useState("none")
+
+
     const submit = () => {
         formValue.title = titleValue.current.value
         formValue.categury = categuryValue.current.value
-        formValue.Content = contentValue.current.value
+        formValue.content = contentValue.current.value
+
         console.log(formValue);
+
+        fetch('https://65edc6d408706c584d9a9190.mockapi.io/Posts', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(formValue)
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log(response.json());
+                    setseccessMessage("block")
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            })
     }
 
     return (
@@ -34,6 +53,7 @@ export default function CreactPostFrom() {
             <button type='submit' className='mb-2 text-white  p-3 bg-green-600 rounded-sm hover:bg-green-700 transition-all duration-300' ref={submitRef} onClick={submit}>
                 Save and Submit
             </button>
+            <p style={{ display: seccessMessage }}>Data Saved to Database.</p>
         </div>
     )
 }
